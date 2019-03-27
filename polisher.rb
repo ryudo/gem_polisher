@@ -8,9 +8,9 @@ if gem_names.empty?
 end
 
 versions = {}
-
-Dir.each_child('../') do |f|
-  dir_name = '../' + f
+base_dir = '../'
+Dir.each_child(base_dir) do |repo_dir|
+  dir_name = base_dir + repo_dir
   next unless File.directory?(dir_name)
 
   file_name = dir_name + '/Gemfile.lock'
@@ -21,18 +21,18 @@ Dir.each_child('../') do |f|
   parser.specs.each do |spec|
     if gem_names.include?(spec.name)
       index = gem_names.index(spec.name)
-      versions[f] ||= []
-      versions[f][index] = spec.version.to_s
+      versions[repo_dir] ||= []
+      versions[repo_dir][index] = spec.version.to_s
     end
   end
 end
 
 versions_array = []
-versions.each do |k, v|
+versions.each do |repo_name, v|
   numbers = v
   range = numbers.length..gem_names.length-1
   numbers.fill(nil, range)
-  versions_array << [k] + v
+  versions_array << [repo_name] + numbers
 end
 
 header = [nil] + gem_names
